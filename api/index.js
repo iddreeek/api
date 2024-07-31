@@ -17,9 +17,9 @@ app.get('/', (req, res) => {
 })
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
-app.post('/product/burgers', burgersPost);
+app.post('/product/burger', burgersPost);
 
 app.get('/product/drinks', drinks);
 app.get('/product/drinks/id=:id', drinksById);
-app.post('/product/drinks', drinksPost);
+app.post('/product/drink', drinksPost);
 
