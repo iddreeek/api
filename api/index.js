@@ -8,7 +8,7 @@ app.listen(PORT, () => {
   console.log('Server is Running');
 });
 
-const { burgers, burgersById, burgersPost, burgersPostImg } = require('./handler/burgers');
+const { burgers, burgersById, burgersPost, burgersPostImg } = require('../handler/burgers');
 app.get('/', (req, res) => {
   res.send('Hello World')
 })
