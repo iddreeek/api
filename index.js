@@ -8,8 +8,9 @@ app.listen(PORT, () => {
   console.log('Server is Running');
 });
 
-const { burgers, burgersById, burgersPost } = require('./handler/burgers');
+const { burgers, burgersById, burgersPost, burgersPostImg } = require('./handler/burgers');
 
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
 app.post('/product/burgers', burgersPost);
+app.post('/product/burgersimg', burgersPostImg);
