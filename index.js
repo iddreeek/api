@@ -9,7 +9,9 @@ app.listen(PORT, () => {
 });
 
 const { burgers, burgersById, burgersPost, burgersPostImg } = require('./handler/burgers');
-
+app.get('/', (req, res) => {
+  res.send('Hello World')
+})
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
 app.post('/product/burgers', burgersPost);
