@@ -5,29 +5,29 @@ const { v4: uuidv4 } = require('uuid');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-exports.burgers = async (req, res) => {
+exports.drinks = async (req, res) => {
     try {
-        const burgersRef = db.collection('burgers');
-        const snapshot = await burgersRef.get();
+        const drinksRef = db.collection('drinks');
+        const snapshot = await drinksRef.get();
         if (snapshot.empty) {
             res.status(404).send('No matching documents.');
             return;
         }
-        const burgers = [];
+        const drinks = [];
         snapshot.forEach(doc => {
-            burgers.push({ id: doc.id, ...doc.data() });
+            drinks.push({ id: doc.id, ...doc.data() });
         });
-        res.status(200).send(burgers);
+        res.status(200).send(drinks);
     } catch (error) {
         res.status(500).send('Error getting documents: ' + error.message);
     }
 }
 
-exports.burgersById = async (req, res) => {
+exports.drinksById = async (req, res) => {
     try {
-        const burgerId = req.params.id;
-        const burgerRef = db.collection('burgers').doc(burgerId);
-        const doc = await burgerRef.get();
+        const drinkId = req.params.id;
+        const drinkRef = db.collection('drinks').doc(drinkId);
+        const doc = await drinkRef.get();
         if (!doc.exists) {
             res.status(404).send('No such document!');
             return;
@@ -38,7 +38,7 @@ exports.burgersById = async (req, res) => {
     }
 }
 
-exports.burgersPost = [
+exports.drinksPost = [
     upload.single('image'), // Middleware to handle single file upload with field name 'image'
     async (req, res) => {
         try {
@@ -49,7 +49,7 @@ exports.burgersPost = [
             }
 
             const imageName = `${uuidv4()}_${image.originalname}`;
-            const filePath = `burgers/${imageName}`;
+            const filePath = `drinks/${imageName}`;
             const blob = bucket.file(filePath);
             const blobStream = blob.createWriteStream({
                 metadata: {
@@ -68,25 +68,25 @@ exports.burgersPost = [
                 // Construct the public URL
                 const imageUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
                 
-                // Update Firestore with new burger entry
+                // Update Firestore with new drink entry
                 const counterRef = db.collection('metadata').doc('counters');
                 const counterDoc = await counterRef.get();
-                let lastBurgerId = 0;
+                let lastdrinkId = 0;
                 if (counterDoc.exists) {
-                    lastBurgerId = counterDoc.data().lastBurgerId;
+                    lastdrinkId = counterDoc.data().lastdrinkId;
                 }
-                const newId = lastBurgerId + 1;
+                const newId = lastdrinkId + 1;
 
-                // Save burger details to Firestore
-                const newBurger = {
+                // Save drink details to Firestore
+                const newdrink = {
                     name,
                     price,
                     imageUrl: imageUrl
                 };
-                await db.collection('burgers').doc(newId.toString()).set(newBurger);
-                await counterRef.update({ lastBurgerId: newId });
+                await db.collection('drinks').doc(newId.toString()).set(newdrink);
+                await counterRef.update({ lastdrinkId: newId });
 
-                res.status(201).json({ message: 'Burger added successfully', data: newBurger });
+                res.status(201).json({ message: 'drink added successfully', data: newdrink });
             });
 
             blobStream.end(image.buffer);
