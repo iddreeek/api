@@ -11,10 +11,8 @@ app.listen(PORT, () => {
 });
 
 const { burgers, burgersById, burgersPost } = require('../handler/burgers');
-const { drinks, drinksById, drinksPost, drinksPostImg } = require('../handler/drinks');
-app.get('/', (req, res) => {
-  res.send('Hello World')
-})
+const { drinks, drinksById, drinksPost } = require('../handler/drinks');
+const { products, productsPost} = require("../handler/products")
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
 app.post('/product/burger', burgersPost);
@@ -23,3 +21,5 @@ app.get('/product/drinks', drinks);
 app.get('/product/drinks/id=:id', drinksById);
 app.post('/product/drink', drinksPost);
 
+app.get('/products', products);
+app.post('/products', productsPost)
