@@ -35,7 +35,7 @@ exports.productsPost = [
   upload.single("image"),
   async (req, res) => {
     try {
-      const { title, price, description, category } = req.body;
+      const { title, price, description, category, userId } = req.body; // Ensure userId is included in the request body
       const image = req.file;
       if (!image) {
         return res.status(400).json({ error: "Image file is required" });
@@ -72,6 +72,14 @@ exports.productsPost = [
         };
         await db.collection("products").doc(newId.toString()).set(newProduct);
         await counterRef.update({ lastProductId: newId });
+
+        // Add to sellersproduct collection
+        const sellersProduct = {
+          productId: newId.toString(),
+          userId: userId,
+        };
+        await db.collection("sellersproduct").add(sellersProduct);
+
         res
           .status(201)
           .json({ message: "Product added successfully", data: newProduct });
