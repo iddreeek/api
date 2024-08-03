@@ -12,7 +12,7 @@ app.listen(PORT, () => {
 
 const { burgers, burgersById, burgersPost } = require('../handler/burgers');
 const { drinks, drinksById, drinksPost } = require('../handler/drinks');
-const { products, productsPost} = require("../handler/products")
+const { products, productsPost, productsBySeller} = require("../handler/products")
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
 app.post('/product/burger', burgersPost);
@@ -23,3 +23,4 @@ app.post('/product/drink', drinksPost);
 
 app.get('/products', products);
 app.post('/products', productsPost)
+app.get('/products/uid=:uid', productsBySeller)
