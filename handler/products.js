@@ -98,21 +98,44 @@ exports.productsPost = [
 ];
 
 exports.productsBySeller = async (req, res) => {
-   const userId = req.params.uid;
-   const sellersProductsRef = db
-      .collection("sellersproduct")
-      .where("userId" == userId);
-   const snapshot = await sellersProductsRef.get();
-   const sellersProducts = [];
-   snapshot.forEach((doc) => {
-      sellersProducts.push({ ...doc.data() });
-   });
-   const productslist = sellersProducts.map((prodId)=>db.collection("products").doc(prodId).get())
-   const productsSnapshots = await Promise.all(productslist);
+   try {
+      const userId = req.params.uid;
 
-    const products = productsSnapshots.map(snapshot => ({
-      id: snapshot.id,
-      ...snapshot.data(),
-    }));
-    res.status(200).json(products);
+      if (!userId) {
+         return res.status(400).json({ error: "User ID is required" });
+      }
+
+      // Step 1: Get product IDs from sellersproduct collection for the specific user
+      const sellersProductsSnapshot = await db
+         .collection("sellersproduct")
+         .where("userId", "==", userId)
+         .get();
+
+      if (sellersProductsSnapshot.empty) {
+         return res
+            .status(404)
+            .json({ message: "No products found for this user" });
+      }
+
+      const productIds = [];
+      sellersProductsSnapshot.forEach((doc) => {
+         productIds.push(doc.data().productId);
+      });
+
+      // Step 2: Get product details from products collection for the fetched product IDs
+      const productsPromises = productIds.map((productId) =>
+         db.collection("products").doc(productId).get()
+      );
+      const productsSnapshots = await Promise.all(productsPromises);
+
+      const products = productsSnapshots.map((snapshot) => ({
+         id: snapshot.id,
+         ...snapshot.data(),
+      }));
+
+      res.status(200).json(products);
+   } catch (error) {
+      console.error("Error fetching products by seller:", error);
+      res.status(500).json({ error: "Internal server error" });
+   }
 };
