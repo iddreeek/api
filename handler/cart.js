@@ -17,19 +17,18 @@ exports.cartById = async (req, res) => {
          db.collection("products").doc(productId).get()
       );
       const productsSnapshots = await Promise.all(prodCartPromise);
-
       const productQuantityMap = {};
       products.forEach((doc) => {
          productQuantityMap[doc.productId] = doc.quantity;
       });
-
       const prodCart = productsSnapshots.map((snapshot) => ({
          id: snapshot.id,
          title: snapshot.data().title,
          price: Number(snapshot.data().price),
          image: snapshot.data().imageUrl,
          quantity: productQuantityMap[snapshot.id],
-         totalPrice: Number(snapshot.data().price) * productQuantityMap[snapshot.id],
+         totalPrice:
+            Number(snapshot.data().price) * productQuantityMap[snapshot.id],
       }));
 
       res.status(200).json(prodCart);
@@ -44,7 +43,9 @@ exports.cartPost = async (req, res) => {
       const { userId, productId } = req.body;
 
       if (!userId || !productId) {
-         return res.status(400).send({ error: "User ID and Product ID are required" });
+         return res
+            .status(400)
+            .send({ error: "User ID and Product ID are required" });
       }
 
       const cartRef = db.collection("cart").doc(userId);
