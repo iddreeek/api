@@ -14,6 +14,7 @@ const { burgers, burgersById, burgersPost } = require('../handler/burgers');
 const { drinks, drinksById, drinksPost } = require('../handler/drinks');
 const { products, productsPost, productsBySeller} = require("../handler/products");
 const { users } = require('../handler/user');
+const { cartPost, cartById } = require('../handler/cart');
 
 app.get('/product/burgers', burgers);
 app.get('/product/burgers/id=:id', burgersById);
@@ -24,7 +25,9 @@ app.get('/product/drinks/id=:id', drinksById);
 app.post('/product/drink', drinksPost);
 
 app.get('/products', products);
-app.post('/products', productsPost)
-app.get('/products/uid=:uid', productsBySeller)
+app.post('/products', productsPost);
+app.get('/products/uid=:uid', productsBySeller);
 
-app.post('/users', users)
+app.post('/users', users);
+app.post('/cart', cartPost);
+app.get('/cart/:userId', cartById);
