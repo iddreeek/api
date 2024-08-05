@@ -29,5 +29,6 @@ app.post('/products', productsPost);
 app.get('/products/uid=:uid', productsBySeller);
 
 app.post('/users', users);
+
 app.post('/cart', cartPost);
 app.get('/cart/:userId', cartById);
