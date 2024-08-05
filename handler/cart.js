@@ -1,58 +1,86 @@
 const { db } = require("../util/admin");
 
 exports.cartById = async (req, res) => {
-    try {
+   try {
       const { userId } = req.params;
-      const cartRef = db.collection('cart').doc(userId);
+      const cartRef = db.collection("cart").doc(userId);
       const cartDoc = await cartRef.get();
-  
       if (!cartDoc.exists) {
-        return res.status(404).send({ error: 'Cart not found' });
+         return res.status(404).send({ error: "Cart not found" });
       }
-  
-      res.send(cartDoc.data());
-    } catch (error) {
-      console.error('Error fetching cart:', error);
-      res.status(500).send({ error: 'Something went wrong' });
-    }
-  };
+      const products = cartDoc.data().products;
+      const prodId = [];
+      products.map((doc) => {
+         prodId.push(doc.productId);
+      });
+      const prodCartPromise = prodId.map((productId) =>
+         db.collection("products").doc(productId).get()
+      );
+      const productsSnapshots = await Promise.all(prodCartPromise);
+      const productQuantityMap = {};
+      products.forEach((doc) => {
+         productQuantityMap[doc.productId] = doc.quantity;
+      });
+      const prodCart = productsSnapshots.map((snapshot) => ({
+         id: snapshot.id,
+         title: snapshot.data().title,
+         price: Number(snapshot.data().price),
+         image: snapshot.data().imageUrl,
+         quantity: productQuantityMap[snapshot.id],
+         totalPrice : Number(snapshot.data().price) * productQuantityMap[snapshot.id]
+      }));
+      res.status(200).json(prodCart);
+   } catch (error) {
+      console.error("Error fetching cart:", error);
+      res.status(500).send({ error: "Something went wrong" });
+   }
+};
 
-  exports.cartPost = [async (req, res) => {
-    try {
-        const { userId, productId } = req.body;
+exports.cartPost = [
+   async (req, res) => {
+      try {
+         const { userId, productId } = req.body;
 
-        if (!userId || !productId) {
-            return res.status(400).send({ error: 'User ID and Product ID are required' });
-        }
+         if (!userId || !productId) {
+            return res
+               .status(400)
+               .send({ error: "User ID and Product ID are required" });
+         }
 
-        const cartRef = db.collection("cart").doc(userId);
-        const cartDoc = await cartRef.get();
+         const cartRef = db.collection("cart").doc(userId);
+         const cartDoc = await cartRef.get();
 
-        if (!cartDoc.exists) {
+         if (!cartDoc.exists) {
             // Create a new cart if it doesn't exist
-            await cartRef.set({ userId: userId, products: [{ productId, quantity: 1 }] });
-        } else {
+            await cartRef.set({
+               userId: userId,
+               products: [{ productId, quantity: 1 }],
+            });
+         } else {
             // Update the existing cart
             const cartData = cartDoc.data();
             const products = cartData.products || [];
-            const productIndex = products.findIndex(product => product.productId === productId);
+            const productIndex = products.findIndex(
+               (product) => product.productId === productId
+            );
 
             if (productIndex >= 0) {
-                // Product already in cart, increment quantity
-                products[productIndex].quantity += 1;
+               // Product already in cart, increment quantity
+               products[productIndex].quantity += 1;
             } else {
-                // Add new product to cart
-                products.push({ productId, quantity: 1 });
+               // Add new product to cart
+               products.push({ productId, quantity: 1 });
             }
 
             await cartRef.update({ products });
-        }
+         }
 
-        // Send updated cart data
-        const updatedCart = (await cartRef.get()).data();
-        res.send(updatedCart);
-    } catch (error) {
-        console.error('Error adding product to cart:', error);
-        res.status(500).send({ error: 'Something went wrong' });
-    }
-}];
+         // Send updated cart data
+         const updatedCart = (await cartRef.get()).data();
+         res.send(updatedCart);
+      } catch (error) {
+         console.error("Error adding product to cart:", error);
+         res.status(500).send({ error: "Something went wrong" });
+      }
+   },
+];
