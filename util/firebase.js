@@ -1,12 +1,12 @@
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBuXr7YK0vSVzN8YdytMpyHPXIVdx0_55Q",
-  authDomain: "pos-system-83951.firebaseapp.com",
-  projectId: "pos-system-83951",
-  storageBucket: "pos-system-83951.appspot.com",
-  messagingSenderId: "173847564607",
-  appId: "1:173847564607:web:a8ca028b4b77eed095038a"
+  apiKey: "AIzaSyC0ge8hdNDv7mjWh1IuINba9hLYhcBr5AE",
+  authDomain: "online-shop-ej1117.firebaseapp.com",
+  projectId: "online-shop-ej1117",
+  storageBucket: "online-shop-ej1117.appspot.com",
+  messagingSenderId: "898273371992",
+  appId: "1:898273371992:web:2ddb940d8d84008a57272d"
 };
 
 // Initialize Firebase

@@ -4,7 +4,7 @@ var serviceAccount = require("../pos-system.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'pos-system-83951.appspot.com'
+    storageBucket: 'online-shop-ej1117.appspot.com'
 });
 
 const db = admin.firestore();
